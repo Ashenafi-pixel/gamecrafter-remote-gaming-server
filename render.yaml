@@ -1,16 +1,13 @@
 # Render Blueprint - RGS backend with Supabase
 # Docs: https://render.com/docs/blueprint-spec
 # Root Directory: leave empty (repo root).
+# Uses Docker to avoid Go native runtime "Permission denied" on free tier.
 services:
   - type: web
     name: latam-rgs-backend
-    runtime: go
+    runtime: docker
     region: frankfurt
     plan: free
-
-    # Output "app" to match Render's default; chmod fixes "Permission denied" on free tier
-    buildCommand: go build -o app ./cmd/server
-    startCommand: chmod +x app && ./app
 
     # Set in Render Dashboard → Environment (sync: false = you provide values)
     envVars:
