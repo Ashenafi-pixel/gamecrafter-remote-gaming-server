@@ -32,16 +32,15 @@ func (s *Server) handleGamePage(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusNotFound, "game id required", "INVALID_PATH")
 		return
 	}
-	// Validate game exists (any provider)
-	providers := s.registry.ListProviders()
-	var found bool
-	for _, p := range providers {
-		if s.registry.HasGame(p, gameID) {
-			found = true
-			break
-		}
+	// Validate game exists using the games table (source of truth), not just the in‑memory registry.
+	db, err := rgsdb.GetDB()
+	if err != nil || db == nil {
+		writeError(w, http.StatusInternalServerError, "database unavailable", "DB_UNAVAILABLE")
+		return
 	}
-	if !found {
+	var enabled bool
+	err = db.QueryRowContext(r.Context(), "SELECT enabled FROM games WHERE game_id = $1 AND status = 'ACTIVE'", gameID).Scan(&enabled)
+	if err != nil || !enabled {
 		writeError(w, http.StatusNotFound, "game not found", "GAME_NOT_FOUND")
 		return
 	}
