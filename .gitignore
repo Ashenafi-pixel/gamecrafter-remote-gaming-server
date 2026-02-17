@@ -3,9 +3,10 @@
 .env.local
 *.pem
 
-# Go
+# Go (binaries only; /server is root-level binary, not server/ package)
 /server
 /gamecrafter
+!/server/
 *.exe
 *.test
 vendor/

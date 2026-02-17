@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"latam-crypto/rgs"
+	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server"
 )
 
 // manifest represents the AI-generated manifest.json format.

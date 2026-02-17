@@ -1,4 +1,4 @@
-module latam-crypto/rgs
+module github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server
 
 go 1.22
 

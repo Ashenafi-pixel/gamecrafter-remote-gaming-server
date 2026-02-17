@@ -2,7 +2,7 @@ package games
 
 import (
 	"fmt"
-	rgsdb "latam-crypto/rgs"
+	rgsdb "github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server"
 	"net/url"
 	"sync"
 )

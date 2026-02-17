@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"math/big"
 
-	"latam-crypto/rgs/gamemath"
+	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server/gamemath"
 )
 
 // Symbol is a scratch card symbol.

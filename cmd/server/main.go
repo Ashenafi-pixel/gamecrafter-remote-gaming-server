@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"latam-crypto/rgs/config"
-	"latam-crypto/rgs/server"
+	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server/config"
+	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server/server"
 
 	"github.com/joho/godotenv"
 )

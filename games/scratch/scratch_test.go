@@ -3,7 +3,7 @@ package scratch
 import (
 	"testing"
 
-	"latam-crypto/rgs/gamemath"
+	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server/gamemath"
 )
 
 func TestGenerate_Legacy(t *testing.T) {
