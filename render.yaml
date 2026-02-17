@@ -13,8 +13,8 @@ services:
 
     # Set in Render Dashboard → Environment (sync: false = you provide values)
     envVars:
-      - key: DB_URL
+      - key: DATABASE_URL
         sync: false
-      - key: JWT_SECRET
+      - key: OPERATOR_SECRET
         sync: false
     # PORT is set automatically by Render; config prefers PORT then RGS_PORT
