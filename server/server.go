@@ -373,12 +373,13 @@ func (s *Server) handleGamesList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rows, err := db.QueryContext(r.Context(), `
-		SELECT game_id, name, internal_name, COALESCE(provider, '') 
+		SELECT game_id, COALESCE(name, ''), COALESCE(internal_name, ''), COALESCE(provider, '') 
 		FROM games 
 		WHERE status = 'ACTIVE' AND enabled = true 
 		ORDER BY game_id
 	`)
 	if err != nil {
+		log.Printf("rgs/games/list: query failed: %v", err)
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to list games"})
 		return
 	}
@@ -394,6 +395,7 @@ func (s *Server) handleGamesList(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var g gameRow
 		if err := rows.Scan(&g.GameID, &g.Name, &g.InternalName, &g.Provider); err != nil {
+			log.Printf("rgs/games/list: scan row: %v", err)
 			continue
 		}
 		if u := s.resolveGameBanner(g.GameID); u != "" {
