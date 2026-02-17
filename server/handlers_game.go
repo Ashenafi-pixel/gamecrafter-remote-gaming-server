@@ -765,15 +765,49 @@ func (s *Server) bundleRoot(gameID string) string {
 	return filepath.Join(s.cfg.GamesDir, gameID)
 }
 
-// bundleGameExists returns true if the game has a bundle directory with index.html.
+func (s *Server) resolveGameBanner(gameID string) string {
+	root := s.bundleRoot(gameID)
+	baseURL := strings.TrimSuffix(s.cfg.RGSBaseURL, "/")
+	try := func(path string) string {
+		data, err := os.ReadFile(filepath.Join(root, path))
+		if err != nil {
+			return ""
+		}
+		var v struct {
+			Marketing struct {
+				ThumbnailURL string `json:"thumbnailUrl"`
+			} `json:"marketing"`
+			ThumbnailURL string `json:"thumbnailUrl"`
+		}
+		if err := json.Unmarshal(data, &v); err != nil {
+			return ""
+		}
+		rel := strings.TrimSpace(v.Marketing.ThumbnailURL)
+		if rel == "" {
+			rel = strings.TrimSpace(v.ThumbnailURL)
+		}
+		if rel == "" {
+			return ""
+		}
+		rel = strings.TrimPrefix(filepath.ToSlash(rel), "./")
+		fpath := filepath.Join(root, filepath.FromSlash(rel))
+		if info, err := os.Stat(fpath); err != nil || info.IsDir() {
+			return ""
+		}
+		return baseURL + "/rgs/game/" + gameID + "/" + rel
+	}
+	if u := try("visuals.json"); u != "" {
+		return u
+	}
+	return try("project_scratch.json")
+}
+
 func (s *Server) bundleGameExists(gameID string) bool {
 	indexPath := filepath.Join(s.bundleRoot(gameID), "index.html")
 	info, err := os.Stat(indexPath)
 	return err == nil && !info.IsDir()
 }
 
-// serveBundleAsset serves a static file from any game bundle (e.g. project_scratch.json, assets/img_123.png).
-// Used by lucky_star and any other game that has a bundle under rgs/games/<gameID>/.
 func (s *Server) serveBundleAsset(w http.ResponseWriter, r *http.Request, gameID, subPath string) {
 	root := s.bundleRoot(gameID)
 	cleanSub := filepath.Clean(subPath)
@@ -820,9 +854,7 @@ func (s *Server) serveBundleAsset(w http.ResponseWriter, r *http.Request, gameID
 	http.ServeContent(w, r, info.Name(), info.ModTime(), f)
 }
 
-// serveBundleGame serves a game bundle's index.html with RGS config injected.
-// Used by lucky_star and any other game that has rgs/games/<gameID>/index.html and optional assets/.
-func (s *Server) serveBundleGame(w http.ResponseWriter, r *http.Request, gameID, token, lang, currency, providerID string) {
+func (s *Server) serveBundleGame(w http.ResponseWriter, _ *http.Request, gameID, token, lang, currency, providerID string) {
 	root := s.bundleRoot(gameID)
 	indexPath := filepath.Join(root, "index.html")
 	htmlBytes, err := os.ReadFile(indexPath)

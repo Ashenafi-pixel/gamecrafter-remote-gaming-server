@@ -7,6 +7,12 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"log"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
+
 	rgsdb "github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server"
 	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server/config"
 	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server/gamemath"
@@ -14,11 +20,6 @@ import (
 	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server/operator"
 	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server/platform"
 	"github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server/round"
-	"log"
-	"net/http"
-	"net/url"
-	"strings"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -145,6 +146,7 @@ func (s *Server) Run() error {
 	mux.HandleFunc("GET /rgs/game/", s.handleGamePage)
 	mux.HandleFunc("GET /game/launch", s.handleGameLaunch)
 	mux.HandleFunc("GET /rgs/tx/balance", s.handleTxBalance)
+	mux.HandleFunc("GET /rgs/games/list", s.handleGamesList)
 	// Admin: import standalone HTML + assets bundles generated from GameCrafter.
 	mux.HandleFunc("POST /rgs/admin/games/import-zip", s.handleImportZip)
 
@@ -357,6 +359,52 @@ func (s *Server) getBalance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]interface{}{"balances": balances})
+}
+
+// handleGamesList returns active and enabled games from the games table (GET /rgs/games/list).
+func (s *Server) handleGamesList(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
+		return
+	}
+	db, err := rgsdb.GetDB()
+	if err != nil || db == nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "database unavailable"})
+		return
+	}
+	rows, err := db.QueryContext(r.Context(), `
+		SELECT game_id, name, internal_name, COALESCE(provider, '') 
+		FROM games 
+		WHERE status = 'ACTIVE' AND enabled = true 
+		ORDER BY game_id
+	`)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "failed to list games"})
+		return
+	}
+	defer rows.Close()
+	type gameRow struct {
+		GameID       string `json:"game_id"`
+		Name         string `json:"name"`
+		InternalName string `json:"internal_name,omitempty"`
+		Provider     string `json:"provider,omitempty"`
+		Banner       string `json:"banner,omitempty"`
+	}
+	var list []gameRow
+	for rows.Next() {
+		var g gameRow
+		if err := rows.Scan(&g.GameID, &g.Name, &g.InternalName, &g.Provider); err != nil {
+			continue
+		}
+		if u := s.resolveGameBanner(g.GameID); u != "" {
+			g.Banner = u
+		}
+		list = append(list, g)
+	}
+	if list == nil {
+		list = []gameRow{}
+	}
+	writeJSON(w, http.StatusOK, map[string]interface{}{"games": list})
 }
 
 type gameLaunchResponse struct {
