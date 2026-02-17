@@ -1,0 +1,660 @@
+{
+  "api": {
+    "baseUrl": "local",
+    "apiKey": "",
+    "enabled": true,
+    "useLocalMock": true
+  },
+  "gemini": {
+    "apiKey": "",
+    "modelName": "imagen-3.0-generate-002",
+    "enabled": false
+  },
+  "openai": {
+    "apiKey": "",
+    "modelName": "dall-e-3",
+    "quality": "standard",
+    "size": "1024x1024",
+    "style": "vivid",
+    "enabled": false
+  },
+  "leonardo": {
+    "apiKey": "",
+    "modelId": "aa77f04e-3eec-4034-9c07-d0f619684628",
+    "width": 768,
+    "height": 768,
+    "promptMagic": true,
+    "alchemy": true,
+    "contrastRatio": 0.5,
+    "guidanceScale": 7,
+    "enabled": false
+  },
+  "theme": {
+    "mainTheme": "Tropical Paradise",
+    "artStyle": "cartoon",
+    "colorScheme": "warm-vibrant",
+    "mood": "exciting",
+    "description": "Exotic beach vacation with palm trees and cocktails",
+    "references": [
+      "beach",
+      "palm trees",
+      "island",
+      "cocktails",
+      "sunshine",
+      "tropical fruits"
+    ],
+    "includeCardSymbols": true,
+    "includeWild": true,
+    "includeScatter": true,
+    "generated": {
+      "background": null,
+      "symbols": {
+        "wild": "assets/img_1840382820.png",
+        "high1": "assets/img_285475296.png",
+        "high2": "assets/img_746641012.png",
+        "high3": "assets/img_729507443.png",
+        "medium1": "assets/img_712686020.png",
+        "medium2": "assets/img_1173631480.png",
+        "low1": "assets/img_263748116.png",
+        "low2": "assets/img_347939029.png"
+      },
+      "frame": null
+    },
+    "presetSymbol": {},
+    "selectedThemeId": "tropical-paradise",
+    "colors": {
+      "primary": "#FF6347",
+      "secondary": "#32CD32",
+      "accent": "#1E90FF",
+      "background": "#87CEEB"
+    },
+    "name": "Tropical Paradise"
+  },
+  "rtp": {
+    "baseRTP": 96,
+    "bonusRTP": 0,
+    "featureRTP": 0,
+    "variants": {
+      "low": 94,
+      "medium": 96,
+      "high": 98
+    },
+    "targetRTP": 96,
+    "volatilityScale": 5
+  },
+  "volatility": {
+    "level": "medium",
+    "variance": 10,
+    "hitRate": 20,
+    "maxWinPotential": 5000,
+    "precisionValue": 5,
+    "hitFrequency": 25
+  },
+  "bet": {
+    "min": 0.2,
+    "max": 100,
+    "increment": 0.2,
+    "quickOptions": [
+      1,
+      2,
+      5,
+      10,
+      20,
+      50
+    ],
+    "defaultBet": 1,
+    "maxLines": 20
+  },
+  "reels": {
+    "payMechanism": "betlines",
+    "layout": {
+      "shape": "rectangle",
+      "reels": 5,
+      "rows": 3,
+      "orientation": "landscape",
+      "payMechanism": "betlines"
+    },
+    "betlines": 20,
+    "spinDirection": "vertical",
+    "cluster": {
+      "minSymbols": 5,
+      "diagonalAllowed": false,
+      "payouts": {
+        "5": 5,
+        "8": 20,
+        "12": 100
+      }
+    },
+    "symbols": {
+      "total": 10,
+      "wilds": 1,
+      "scatters": 1,
+      "list": []
+    }
+  },
+  "bonus": {
+    "freeSpins": {
+      "enabled": false,
+      "count": 10,
+      "triggers": [
+        3
+      ],
+      "multipliers": [
+        1
+      ],
+      "retriggers": false
+    },
+    "pickAndClick": {
+      "enabled": false,
+      "gridSize": [
+        3,
+        3
+      ],
+      "picks": 3,
+      "maxPrize": 100,
+      "extraPicks": false,
+      "multipliers": false
+    },
+    "wheel": {
+      "enabled": false,
+      "segments": 8,
+      "maxMultiplier": 50,
+      "levelUp": false,
+      "respin": false
+    },
+    "holdAndSpin": {
+      "enabled": false,
+      "gridSize": [
+        3,
+        3
+      ],
+      "initialRespins": 3,
+      "maxSymbolValue": 100,
+      "resetRespins": false,
+      "collectAll": false
+    },
+    "jackpots": {
+      "enabled": false,
+      "type": "fixed",
+      "levels": [
+        "Minor",
+        "Major"
+      ],
+      "trigger": "random"
+    },
+    "specialFeatures": {
+      "expandingWilds": false,
+      "stickyWilds": false,
+      "cascadingReels": false,
+      "bonusWheel": false
+    }
+  },
+  "audio": {
+    "backgroundMusic": {
+      "MusicBed": null,
+      "AlternateLoop": null
+    },
+    "spinSound": "",
+    "winSounds": {
+      "small": "",
+      "medium": "",
+      "big": "",
+      "mega": ""
+    },
+    "featureSounds": {},
+    "soundIntensity": "medium",
+    "enableVoiceover": false
+  },
+  "playerExperience": {
+    "spinSpeed": "normal",
+    "autospinOptions": [
+      10,
+      25,
+      50,
+      100
+    ],
+    "defaultAutospin": 25,
+    "skipAnimations": false,
+    "bigWinThreshold": 30,
+    "megaWinThreshold": 100
+  },
+  "localization": {
+    "supportedLanguages": [
+      "en"
+    ],
+    "defaultLanguage": "en",
+    "supportedCurrencies": [
+      "USD",
+      "EUR",
+      "GBP"
+    ],
+    "defaultCurrency": "USD",
+    "regionalRestrictions": []
+  },
+  "mobile": {
+    "orientationMode": "both",
+    "touchControls": {
+      "swipeToSpin": true,
+      "gestureControls": true,
+      "vibrateOnWin": true
+    },
+    "screenAdaptation": {
+      "smallScreenLayout": true,
+      "largeButtonsForTouch": true
+    }
+  },
+  "analytics": {
+    "trackEvents": true,
+    "metricsToTrack": [
+      "spins",
+      "wins",
+      "features-triggered",
+      "time-played"
+    ],
+    "abTestingEnabled": false
+  },
+  "certification": {
+    "targetMarkets": [
+      "global"
+    ],
+    "complianceChecklist": {},
+    "testingResults": {
+      "rtpVerification": false,
+      "functionalTest": false,
+      "securityAudit": false
+    },
+    "regulatoryDocs": []
+  },
+  "distribution": {
+    "marketplaceListings": [],
+    "revenueModel": "revenue-share",
+    "integrationPlatforms": [],
+    "exclusivity": false
+  },
+  "splashScreen": {
+    "enabled": true,
+    "gameTitle": "Epic Slots Adventure",
+    "gameSubtitle": "The Ultimate Gaming Experience",
+    "featureHighlights": [
+      {
+        "id": "feature-1",
+        "title": "5 Reels, 25 Paylines",
+        "description": "Multiple ways to win on every spin",
+        "icon": "🎰",
+        "image": null,
+        "position": {
+          "x": 25,
+          "y": 25
+        },
+        "size": {
+          "width": 200,
+          "height": 120
+        },
+        "backgroundColor": "rgba(255, 255, 255, 0.1)",
+        "textColor": "#ffffff"
+      },
+      {
+        "id": "feature-2",
+        "title": "Wild & Scatter Symbols",
+        "description": "Special symbols for bigger wins",
+        "icon": "💎",
+        "image": null,
+        "position": {
+          "x": 75,
+          "y": 25
+        },
+        "size": {
+          "width": 200,
+          "height": 120
+        },
+        "backgroundColor": "rgba(255, 255, 255, 0.1)",
+        "textColor": "#ffffff"
+      },
+      {
+        "id": "feature-3",
+        "title": "Free Spins Bonus",
+        "description": "Trigger bonus rounds for extra chances",
+        "icon": "🎁",
+        "image": null,
+        "position": {
+          "x": 25,
+          "y": 75
+        },
+        "size": {
+          "width": 200,
+          "height": 120
+        },
+        "backgroundColor": "rgba(255, 255, 255, 0.1)",
+        "textColor": "#ffffff"
+      },
+      {
+        "id": "feature-4",
+        "title": "Up to 1000x Multiplier",
+        "description": "Massive win potential with every spin",
+        "icon": "⚡",
+        "image": null,
+        "position": {
+          "x": 75,
+          "y": 75
+        },
+        "size": {
+          "width": 200,
+          "height": 120
+        },
+        "backgroundColor": "rgba(255, 255, 255, 0.1)",
+        "textColor": "#ffffff"
+      }
+    ],
+    "splashDuration": 3000,
+    "splashBackground": "#2D1B69",
+    "splashTextColor": "#ffffff"
+  },
+  "gameRules": {
+    "helpScreens": [],
+    "paytableConfig": {},
+    "howToPlayText": "Match three gametype\n\nYou will win a prize if you reveal three identical symbols, the prize will be equal to the amount of one of those three identical symbols.\n\nPress the BUY-button to buy a new card. Either scratch manually or press the SCRATCH ALL button to reveal all symbols.\n\nPress the AUTO PLAY button to buy multiple cards that will be automatically scratched.",
+    "rulesText": "Misuse or malfunction voids all pays and plays. Only highest winning symbol paid per card. Wins are shown in currency and are based on the size of the stake.",
+    "generalText": "BALANCE\nYour current balance is shown in the BALANCE display. Balance, bets and winnings are presented in the player’s chosen currency.\n\nBET\nThe current bet level is shown in the BET display. The allowed bet level for this game is €2.00.\n\nTURBO PLAY\nThe Turbo Play functionality is used to get the fastest game round possible (not available on all operators and jurisdictions). Turbo Play is activated from the menu.",
+    "additionalInfoText": "In addition to the features described here, the bar on the bottom of the game screen displays the current balance in the chosen currency, the amount paid if a win occurs, and the amount bet on the last/current proposition.",
+    "interruptedGameText": "If your internet connection fails during a game, you can typically resume the round by reloading the game immediately. If a round was already completed on the server but the visual reveal was interrupted, the result will be recorded in your Game History, though the animation may not replay.\n\nUnfinished Rounds: Any active bet on an incomplete round will identify as \"paused\" until you complete the action or the system auto-resolves it. If a game remains inactive for 24 hours (1 day), the system will typically void the round and refund the original wager to your balance.\n\nSystem Protection: We ensure fair play by logging all game states. Malfunctions in hardware or networks do not void stored results unless the game cannot be resolved, in which case bets are refunded. Winning outcomes that require no further player action will be automatically credited.",
+    "gameHistoryText": "The result of a completed game may be viewed in Game History immediately after closing the game window. Results of unfinished games are not displayed in Game History.",
+    "termsText": "- Misuse or malfunction voids all pays and plays.\n- Any visual representation of a physical device (a reel, a wheel of fortune or similar) does not represent a “real” physical device and the probabilities of it stopping on any particular position is determined by the game’s random number generator, and not the number of positions on each device.",
+    "paytableRows": [
+      {
+        "symbol": "3x Diamond",
+        "value": "€150,000.00"
+      },
+      {
+        "symbol": "3x Gold Bar",
+        "value": "€50,000.00"
+      },
+      {
+        "symbol": "3x Cash Stack",
+        "value": "€25,000.00"
+      },
+      {
+        "symbol": "3x Coins",
+        "value": "€10,000.00"
+      },
+      {
+        "symbol": "3x Ring",
+        "value": "€7,500.00"
+      },
+      {
+        "symbol": "3x Horseshoe",
+        "value": "€5,000.00"
+      },
+      {
+        "symbol": "3x Bell",
+        "value": "€2,500.00"
+      },
+      {
+        "symbol": "3x Clover",
+        "value": "€1,000.00"
+      },
+      {
+        "symbol": "3x Cherry",
+        "value": "€500.00"
+      },
+      {
+        "symbol": "3x Lemon",
+        "value": "€100.00"
+      }
+    ],
+    "generalRulesText": "Match three gametype\n\nYou will win a prize if you reveal three identical symbols, the prize will be equal to the amount of one of those three identical symbols.\n\nPress the BUY-button to buy a new card. Either scratch manually or press the SCRATCH ALL button to reveal all symbols.\n\nPress the AUTO PLAY button to buy multiple cards that will be automatically scratched.",
+    "paytableText": "3x Diamond | €150,000.00\n3x Gold Bar | €50,000.00\n3x Cash Stack | €25,000.00\n3x Coins | €10,000.00\n3x Ring | €7,500.00\n3x Horseshoe | €5,000.00\n3x Bell | €2,500.00\n3x Clover | €1,000.00\n3x Cherry | €500.00\n3x Lemon | €100.00"
+  },
+  "advanced": {
+    "animation": {
+      "accelerationDuration": 0.5,
+      "constantSpeedDuration": 2,
+      "decelerationDuration": 2,
+      "anticipationPauseDuration": 0.2,
+      "anticipationOffset": -20,
+      "shakeAmplitude": 10,
+      "shakeFrequency": 5,
+      "overshootPercentage": 10,
+      "bounceCount": 1,
+      "bounceDamping": 0.4,
+      "motionBlurStrength": 0,
+      "easingFunction": "power2.inOut",
+      "symbolScaleOnStop": 1.2,
+      "flashAlpha": 0.5
+    }
+  },
+  "gridPosition": {
+    "x": 0,
+    "y": 0
+  },
+  "gridScale": 120,
+  "gridStretch": {
+    "x": 100,
+    "y": 100
+  },
+  "showSymbolBackgrounds": true,
+  "state": {
+    "mode": "normal"
+  },
+  "scratch": {
+    "layout": {
+      "rows": 3,
+      "columns": 3,
+      "shape": "square",
+      "cellStyle": "transparent",
+      "grid": {
+        "x": 0,
+        "y": 36,
+        "scale": 100,
+        "scaleX": 85,
+        "scaleY": 85,
+        "maintainAspectRatio": false
+      },
+      "transform": {
+        "x": 0,
+        "y": 25,
+        "scale": 86,
+        "scaleX": 86,
+        "scaleY": 86,
+        "maintainAspectRatio": true
+      }
+    },
+    "mechanic": {
+      "type": "match_3"
+    },
+    "brush": {
+      "size": 150,
+      "tipType": "custom",
+      "customTipImage": "assets/img_1165721840.png",
+      "customBrushes": [
+        {
+          "id": "custom-1771096222483",
+          "url": "assets/img_1165721840.png",
+          "label": "Uploaded Brush"
+        }
+      ],
+      "revealThreshold": 0.7
+    },
+    "symbols": {
+      "style": "custom_sym_1771096329905",
+      "numberStyle": "gold",
+      "customAssets": [
+        {
+          "id": "custom_sym_1771096329905",
+          "url": "assets/img_111276742.png",
+          "label": "Custom Upload"
+        },
+        {
+          "id": "custom_sym_1771096327233",
+          "url": "assets/img_2103379961.png",
+          "label": "Custom Upload"
+        },
+        {
+          "id": "custom_sym_1771096317446",
+          "url": "assets/img_653421087.png",
+          "label": "Custom Upload"
+        },
+        {
+          "id": "custom_sym_1771096315392",
+          "url": "assets/img_1632757737.png",
+          "label": "Custom Upload"
+        },
+        {
+          "id": "custom_sym_1771096313325",
+          "url": "assets/img_1319636046.png",
+          "label": "Custom Upload"
+        },
+        {
+          "id": "custom_sym_1771096311262",
+          "url": "assets/img_1490457750.png",
+          "label": "Custom Upload"
+        }
+      ],
+      "loseVariants": [
+        "assets/img_111276742.png"
+      ]
+    },
+    "logo": {
+      "type": "image",
+      "scale": 70,
+      "position": "custom",
+      "layout": "floating",
+      "image": "assets/img_599625615.png",
+      "customPosition": {
+        "x": 0,
+        "y": -40
+      }
+    },
+    "background": {
+      "type": "color",
+      "value": "#1a1a1a"
+    },
+    "overlay": {
+      "image": "",
+      "color": "#ffffff",
+      "opacity": 0
+    },
+    "effects": {
+      "particles": true,
+      "confetti": true,
+      "parallax": true
+    },
+    "audio": {
+      "isGenerating": false,
+      "scratch": "assets/sfx_801438496.mp3",
+      "win": "assets/sfx_1497113328.mp3"
+    },
+    "mascot": {
+      "enabled": false,
+      "source": "none",
+      "position": "bottom-right",
+      "scale": 101,
+      "type": "image",
+      "image": "assets/img_153333493.png",
+      "customPosition": {
+        "x": 182,
+        "y": 102
+      },
+      "animation": "idle"
+    },
+    "prizes": [
+      {
+        "id": "prize_1771096086421_ptvxko0wa",
+        "name": "Jackpot",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_diamond"
+        },
+        "payout": 100,
+        "weight": 10,
+        "probability": 0.001,
+        "symbolId": "assets/img_1319636046.png"
+      },
+      {
+        "id": "prize_1771096086421_8bq9yluwz",
+        "name": "Big Win",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_gold"
+        },
+        "payout": 20,
+        "weight": 1000,
+        "probability": 0.1,
+        "symbolId": "assets/img_1632757737.png"
+      },
+      {
+        "id": "prize_1771096086421_6f9um3sbd",
+        "name": "Medium Win",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_silver"
+        },
+        "payout": 5,
+        "weight": 15000,
+        "probability": 1.5,
+        "symbolId": "assets/img_1490457750.png"
+      },
+      {
+        "id": "prize_1771096086421_zpthj0ayz",
+        "name": "Small Win",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_bronze"
+        },
+        "payout": 2,
+        "weight": 75000,
+        "probability": 7.5,
+        "symbolId": "assets/img_2103379961.png"
+      },
+      {
+        "id": "prize_1771096086421_xxqu1caa9",
+        "name": "Money Back",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_cherry"
+        },
+        "payout": 1,
+        "weight": 400000,
+        "probability": 40,
+        "symbolId": "assets/img_653421087.png"
+      }
+    ],
+    "math": {
+      "mathMode": "UNLIMITED"
+    },
+    "layers": {
+      "overlay": {
+        "zIndex": 40,
+        "visible": true,
+        "mascots": [],
+        "logos": [],
+        "image": "assets/img_434427804.png"
+      },
+      "foil": {
+        "zIndex": 30,
+        "visible": true,
+        "texture": "gold",
+        "opacity": 1,
+        "revealMode": "brush",
+        "color": "#FFD700"
+      },
+      "scene": {
+        "type": "color",
+        "value": "linear-gradient(to top, #f12711, #f5af19)"
+      }
+    }
+  },
+  "selectedGameType": null,
+  "winDisplayImage": "assets/img_1945549109.png",
+  "gameId": "viva-venezuela_20260214",
+  "displayName": "Viva Venezuela",
+  "marketing": {
+    "aiPrompt": "",
+    "thumbnailUrl": "assets/img_1417153337.jpeg",
+    "posterUrl": "assets/img_808501713.jpeg"
+  }
+}
