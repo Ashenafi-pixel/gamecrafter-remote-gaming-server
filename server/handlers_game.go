@@ -14,6 +14,32 @@ import (
 	rgsdb "github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server"
 )
 
+// setFrameAncestors sets Content-Security-Policy frame-ancestors so the game can be embedded by the platform and by the validated referer (partner site).
+func (s *Server) setFrameAncestors(w http.ResponseWriter, embedOrigin string) {
+	platformOrigin := strings.TrimSuffix(s.cfg.PlatformURL, "/")
+	ancestors := "'self' " + platformOrigin
+	if embedOrigin != "" {
+		ancestors += " " + embedOrigin
+	}
+	w.Header().Set("Content-Security-Policy", "frame-ancestors "+ancestors)
+}
+
+// originFromReferer returns the origin (scheme://host) of referer for use in frame-ancestors. Empty if invalid.
+func originFromReferer(referer string) string {
+	referer = strings.TrimSpace(referer)
+	if referer == "" {
+		return ""
+	}
+	u, err := url.Parse(referer)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return ""
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return ""
+	}
+	return u.Scheme + "://" + u.Host
+}
+
 // handleGamePage serves the game HTML for iframe (GET /rgs/game/<gameId>?token=xxx&lang=es&currency=USD).
 func (s *Server) handleGamePage(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -71,16 +97,17 @@ func (s *Server) handleGamePage(w http.ResponseWriter, r *http.Request) {
 	if currency == "" {
 		currency = "USD"
 	}
+	embedOrigin := originFromReferer(referer) // Allow embedding from the validated referer (partner site).
 	switch gameID {
 	case "scratch":
-		s.serveScratchGame(w, r, token, lang, currency, providerID)
+		s.serveScratchGame(w, r, token, lang, currency, providerID, embedOrigin)
 	case "crash":
-		s.serveCrashGame(w, r, token, lang, currency, providerID)
+		s.serveCrashGame(w, r, token, lang, currency, providerID, embedOrigin)
 	case "lucky_star":
-		s.serveBundleGame(w, r, "lucky_star", token, lang, currency, providerID)
+		s.serveBundleGame(w, r, "lucky_star", token, lang, currency, providerID, embedOrigin)
 	default:
 		if s.bundleGameExists(gameID) {
-			s.serveBundleGame(w, r, gameID, token, lang, currency, providerID)
+			s.serveBundleGame(w, r, gameID, token, lang, currency, providerID, embedOrigin)
 		} else {
 			writeError(w, http.StatusNotFound, "game not found", "GAME_NOT_FOUND")
 		}
@@ -202,7 +229,7 @@ func (s *Server) getProviderFromSessionID(ctx context.Context, sessionID string)
 
 // serveScratchGame writes the scratch card game HTML (iframe-ready, token/lang/currency in config).
 // All values embedded in HTML/JS are escaped to prevent XSS.
-func (s *Server) serveScratchGame(w http.ResponseWriter, r *http.Request, token, lang, currency, providerID string) {
+func (s *Server) serveScratchGame(w http.ResponseWriter, r *http.Request, token, lang, currency, providerID, embedOrigin string) {
 	baseURL := strings.TrimSuffix(s.cfg.RGSBaseURL, "/")
 	labels := getScratchLabels(lang)
 	labelsJSON, _ := json.Marshal(labels)
@@ -219,9 +246,7 @@ func (s *Server) serveScratchGame(w http.ResponseWriter, r *http.Request, token,
 	langJS := jsStr(lang)
 	out := scratchGameHTML(langSafe, baseURLJS, providerIDJS, tokenJS, langJS, currencyJS, string(labelsJSON))
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	// Allow embedding only from this RGS and from the platform (different port = different origin).
-	platformOrigin := strings.TrimSuffix(s.cfg.PlatformURL, "/")
-	w.Header().Set("Content-Security-Policy", "frame-ancestors 'self' "+platformOrigin)
+	s.setFrameAncestors(w, embedOrigin)
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(out))
 }
@@ -546,7 +571,7 @@ func getCrashLabels(lang string) map[string]string {
 	return labels["es"]
 }
 
-func (s *Server) serveCrashGame(w http.ResponseWriter, r *http.Request, token, lang, currency, providerID string) {
+func (s *Server) serveCrashGame(w http.ResponseWriter, r *http.Request, token, lang, currency, providerID, embedOrigin string) {
 	baseURL := strings.TrimSuffix(s.cfg.RGSBaseURL, "/")
 	labels := getCrashLabels(lang)
 	labelsJSON, _ := json.Marshal(labels)
@@ -562,7 +587,7 @@ func (s *Server) serveCrashGame(w http.ResponseWriter, r *http.Request, token, l
 	langJS := jsStr(lang)
 	out := crashGameHTML(langSafe, baseURLJS, providerIDJS, tokenJS, langJS, currencyJS, string(labelsJSON))
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Header().Set("Content-Security-Policy", "frame-ancestors 'self' "+strings.TrimSuffix(s.cfg.PlatformURL, "/"))
+	s.setFrameAncestors(w, embedOrigin)
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(out))
 }
@@ -854,7 +879,7 @@ func (s *Server) serveBundleAsset(w http.ResponseWriter, r *http.Request, gameID
 	http.ServeContent(w, r, info.Name(), info.ModTime(), f)
 }
 
-func (s *Server) serveBundleGame(w http.ResponseWriter, _ *http.Request, gameID, token, lang, currency, providerID string) {
+func (s *Server) serveBundleGame(w http.ResponseWriter, _ *http.Request, gameID, token, lang, currency, providerID, embedOrigin string) {
 	root := s.bundleRoot(gameID)
 	indexPath := filepath.Join(root, "index.html")
 	htmlBytes, err := os.ReadFile(indexPath)
@@ -886,8 +911,7 @@ window.RGS_CONFIG = {
 		htmlStr = configScript + htmlStr
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	platformOrigin := strings.TrimSuffix(s.cfg.PlatformURL, "/")
-	w.Header().Set("Content-Security-Policy", "frame-ancestors 'self' "+platformOrigin)
+	s.setFrameAncestors(w, embedOrigin)
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(htmlStr))
 }
