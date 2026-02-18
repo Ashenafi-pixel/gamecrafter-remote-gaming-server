@@ -6,7 +6,8 @@ import (
 	"sync"
 	"time"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 )
 
 var (
@@ -22,10 +23,14 @@ func GetDB() (*sql.DB, error) {
 			dbErr = nil
 			return
 		}
-		dbConn, dbErr = sql.Open("pgx", dsn)
-		if dbErr != nil {
+		config, err := pgx.ParseConfig(dsn)
+		if err != nil {
+			dbErr = err
 			return
 		}
+		// Avoid "prepared statement already exists" with PgBouncer/Supabase: use simple protocol (no server-side prepared statements).
+		config.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+		dbConn = stdlib.OpenDB(*config)
 		// Pool settings for Supabase/Render: idle timeout 4m, limit open conns for pooler
 		dbConn.SetConnMaxIdleTime(4 * time.Minute)
 		dbConn.SetMaxOpenConns(10)
