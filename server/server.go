@@ -1,8 +1,10 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -137,6 +139,7 @@ func (s *Server) loadLuckyStarMath() {
 func (s *Server) Run() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", s.health)
+	mux.HandleFunc("POST /api/openai/images", s.handleOpenAIImages)
 	mux.HandleFunc("GET /rgs/balance", s.getBalance)
 	mux.HandleFunc("POST /rgs/round/start", s.roundStart)
 	mux.HandleFunc("POST /rgs/round/end", s.roundEnd)
@@ -183,6 +186,115 @@ func requestLogger(h http.Handler) http.Handler {
 func (s *Server) health(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok", "service": "rgs"})
+}
+
+// ImageRequest is the proxy request body for OpenAI image generation.
+type ImageRequest struct {
+	Model   string `json:"model"`
+	Prompt  string `json:"prompt"`
+	N       int    `json:"n"`
+	Size    string `json:"size"`
+	Quality string `json:"quality"`
+}
+
+// handleOpenAIImages implements POST /api/openai/images and proxies to OpenAI Images API.
+func (s *Server) handleOpenAIImages(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	apiKey := strings.TrimSpace(os.Getenv("OPENAI_API_KEY"))
+	if apiKey == "" {
+		http.Error(w, "OPENAI_API_KEY not configured", http.StatusInternalServerError)
+		return
+	}
+	orgID := strings.TrimSpace(os.Getenv("OPENAI_ORG_ID"))
+
+	var req ImageRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid JSON body", http.StatusBadRequest)
+		return
+	}
+	req.Prompt = strings.TrimSpace(req.Prompt)
+	if req.Prompt == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(map[string]string{"error": "prompt is required"})
+		return
+	}
+	if strings.TrimSpace(req.Model) == "" {
+		req.Model = "gpt-image-1.5"
+	}
+	if req.N == 0 {
+		req.N = 1
+	}
+	if strings.TrimSpace(req.Size) == "" {
+		req.Size = "1024x1024"
+	}
+	if strings.TrimSpace(req.Quality) == "" {
+		req.Quality = "standard"
+	}
+
+	payload := map[string]any{
+		"model":   req.Model,
+		"prompt":  req.Prompt,
+		"n":       req.N,
+		"size":    req.Size,
+		"quality": req.Quality,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		http.Error(w, "failed to encode request", http.StatusInternalServerError)
+		return
+	}
+
+	httpClient := &http.Client{Timeout: 120 * time.Second}
+	upstreamReq, err := http.NewRequestWithContext(r.Context(), http.MethodPost, "https://api.openai.com/v1/images/generations", bytes.NewReader(body))
+	if err != nil {
+		http.Error(w, "failed to build upstream request", http.StatusInternalServerError)
+		return
+	}
+	upstreamReq.Header.Set("Authorization", "Bearer "+apiKey)
+	upstreamReq.Header.Set("Content-Type", "application/json")
+	if orgID != "" {
+		upstreamReq.Header.Set("OpenAI-Organization", orgID)
+	}
+
+	resp, err := httpClient.Do(upstreamReq)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadGateway)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"error":   "OpenAI API error: request failed",
+			"details": err.Error(),
+		})
+		return
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, "failed to read OpenAI response", http.StatusBadGateway)
+		return
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		log.Printf("openai images error: status=%d body=%s", resp.StatusCode, string(respBody))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadGateway)
+		_ = json.NewEncoder(w).Encode(map[string]string{
+			"error":   "OpenAI API error: " + resp.Status,
+			"details": string(respBody),
+		})
+		return
+	}
+
+	// Pass OpenAI JSON response through unchanged.
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(respBody)
 }
 
 type roundStartRequest struct {
