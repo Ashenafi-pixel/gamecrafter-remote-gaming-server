@@ -17,4 +17,6 @@ services:
         sync: false
       - key: RGS_BASE_URL
         value: https://latam-rgs-backend.onrender.com
+      - key: RGS_GAMES_DIR
+        value: /var/data/rgs-games
     # PORT is set automatically by Render; config prefers PORT then RGS_PORT
