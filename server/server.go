@@ -474,6 +474,7 @@ func (s *Server) getBalance(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleGamesList returns active and enabled games from the games table (GET /rgs/games/list).
+// Returns a simple shape with identifiers plus provider, photo, and game_type.
 func (s *Server) handleGamesList(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
@@ -485,9 +486,15 @@ func (s *Server) handleGamesList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	rows, err := db.QueryContext(r.Context(), `
-		SELECT game_id, COALESCE(name, ''), COALESCE(internal_name, ''), COALESCE(provider, '') 
-		FROM games 
-		WHERE status = 'ACTIVE' AND enabled = true 
+		SELECT
+			COALESCE(game_id, '') AS game_id,
+			COALESCE(name, '') AS name,
+			COALESCE(internal_name, '') AS internal_name,
+			COALESCE(provider, '') AS provider,
+			COALESCE(photo, '') AS photo,
+			COALESCE(NULLIF(TRIM(COALESCE(game_type, '')), ''), '') AS game_type
+		FROM games
+		WHERE status = 'ACTIVE' AND enabled = true
 		ORDER BY game_id
 	`)
 	if err != nil {
@@ -501,12 +508,21 @@ func (s *Server) handleGamesList(w http.ResponseWriter, r *http.Request) {
 		Name         string `json:"name"`
 		InternalName string `json:"internal_name,omitempty"`
 		Provider     string `json:"provider,omitempty"`
+		Photo        string `json:"photo,omitempty"`
+		GameType     string `json:"game_type,omitempty"`
 		Banner       string `json:"banner,omitempty"`
 	}
 	var list []gameRow
 	for rows.Next() {
 		var g gameRow
-		if err := rows.Scan(&g.GameID, &g.Name, &g.InternalName, &g.Provider); err != nil {
+		if err := rows.Scan(
+			&g.GameID,
+			&g.Name,
+			&g.InternalName,
+			&g.Provider,
+			&g.Photo,
+			&g.GameType,
+		); err != nil {
 			log.Printf("rgs/games/list: scan row: %v", err)
 			continue
 		}
