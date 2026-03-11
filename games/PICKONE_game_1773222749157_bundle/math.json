@@ -1,0 +1,54 @@
+{
+  "category": "MATCH",
+  "rtp": 0.96,
+  "volatility": "medium",
+  "mathMode": "UNLIMITED",
+  "totalTickets": 1000000,
+  "winLogic": "SINGLE_WIN",
+  "layout": {
+    "rows": 1,
+    "columns": 3
+  },
+  "prizeTable": [
+    {
+      "id": "po_1",
+      "value": 10,
+      "probability": 0.5,
+      "weight": 33,
+      "isWin": true
+    },
+    {
+      "id": "po_2",
+      "value": 1,
+      "probability": 0.5,
+      "weight": 33,
+      "isWin": true
+    }
+  ],
+  "symbols": {
+    "win": [],
+    "lose": [
+      "/assets/symbols/star_stone_fixed.png",
+      "/assets/symbols/star_stone_fixed.png",
+      "/assets/symbols/star_stone_fixed.png"
+    ]
+  },
+  "match": {
+    "matchCount": 2,
+    "allowWildcards": false
+  },
+  "mechanic": {
+    "type": "pick_one",
+    "winningSymbol": "box_open"
+  },
+  "rulesGrid": {
+    "ruleMode": "COLLECT_X",
+    "targetSymbolId": "/assets/symbols/defstar.png",
+    "requiredHits": 3,
+    "revealStyle": "MANUAL",
+    "grid": {
+      "rows": 4,
+      "cols": 4
+    }
+  }
+}

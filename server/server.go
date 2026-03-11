@@ -30,14 +30,15 @@ import (
 const ScratchDefaultModelID = "scratch_match3"
 
 type Server struct {
-	cfg        *config.Config
-	client     *platform.Client
-	operator   *operator.Client
-	store      *round.Store
-	results    *round.ResultsStore
-	crashStore *round.CrashStore
-	gameMath   *gamemath.Store
-	registry   *games.Registry
+	cfg            *config.Config
+	client         *platform.Client
+	operator       *operator.Client
+	store          *round.Store
+	results        *round.ResultsStore
+	crashStore     *round.CrashStore
+	gameMath       *gamemath.Store
+	registry       *games.Registry
+	scratchConfigs map[string]*ScratchConfig
 }
 
 func New(cfg *config.Config) *Server {
@@ -47,15 +48,19 @@ func New(cfg *config.Config) *Server {
 		op = operator.NewClient(cfg.OperatorEndpoint, cfg.OperatorSecret)
 	}
 	srv := &Server{
-		cfg:        cfg,
-		client:     client,
-		operator:   op,
-		store:      round.NewStore(cfg.DataDir),
-		results:    round.NewResultsStore(cfg.DataDir),
-		crashStore: round.NewCrashStore(cfg.DataDir),
-		gameMath:   gamemath.NewStore(cfg.DataDir),
-		registry:   games.NewRegistry(),
+		cfg:            cfg,
+		client:         client,
+		operator:       op,
+		store:          round.NewStore(cfg.DataDir),
+		results:        round.NewResultsStore(cfg.DataDir),
+		crashStore:     round.NewCrashStore(cfg.DataDir),
+		gameMath:       gamemath.NewStore(cfg.DataDir),
+		registry:       games.NewRegistry(),
+		scratchConfigs: make(map[string]*ScratchConfig),
 	}
+	// Load any DB-backed game math (game_math table) into the in-memory store.
+	srv.loadGameMathFromDB()
+	srv.loadScratchConfigs()
 	srv.loadLuckyStarMath()
 	return srv
 }
@@ -140,6 +145,7 @@ func (s *Server) Run() error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", s.health)
 	mux.HandleFunc("POST /api/openai/images", s.handleOpenAIImages)
+	mux.HandleFunc("POST /api/scratch/play", s.handleScratchPlay)
 	mux.HandleFunc("GET /rgs/balance", s.getBalance)
 	mux.HandleFunc("POST /rgs/round/start", s.roundStart)
 	mux.HandleFunc("POST /rgs/round/end", s.roundEnd)

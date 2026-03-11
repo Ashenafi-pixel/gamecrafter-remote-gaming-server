@@ -1,0 +1,63 @@
+---
+description: RGS scratch math, 3x3 Match-2/3/4 and revealMap design
+alwaysApply: false
+globs: server/**/*
+---
+
+# Scratch Games – RGS Outcome & revealMap Rules
+
+- **RGS owns outcome**
+  - All scratch game outcomes (Match‑2/3/4, Symbol Hunt, Pick One, etc.) are decided **only** in the RGS.
+  - The frontend never rolls RNG or decides wins; it only renders `ResolvedOutcome` from the RGS.
+
+- **Use DB‑backed math**
+  - Store scratch math per game/variant in the `game_math` table with:
+    - `game_id` (e.g. `match2`, `match3`, `match4`, `pickone`)
+    - `model_id` (used as `gamemath.GameMath.ModelID`)
+    - JSON `math` containing tiers, multipliers, and weights.
+  - On startup, **always** load `ACTIVE` rows from `game_math` into `gamemath.Store` via `loadGameMathFromDB` and use `PickTier()` for weighted selection.
+
+- **Mechanic configuration**
+  - Model mechanics and grid in data, not code:
+    - `type`: `"match_n"`, `"target_match"`, or `"symbol_hunt"`.
+    - `match_count`: for Match‑2/3/4.
+    - `rows`, `cols`: grid size (e.g. 3×3 → 9 cells).
+    - `symbols`: symbol IDs that map 1:1 to GameCrafter `SymbolConfig.id`.
+  - Do **not** hardcode symbol IDs or grid size directly in handlers; read them from config/DB.
+
+- **revealMap generation (Match‑N, 3×3)**
+  - On a **win**:
+    - Place exactly `match_count` copies of the winning symbol in random distinct indices of the `rows*cols` grid.
+    - Fill the remaining cells with **dud** symbols.
+    - **Never** allow any dud symbol count to reach `match_count` (no accidental secondary wins).
+  - On a **loss**:
+    - Enforce near‑miss behavior from math/config (e.g. exactly 2 of the top symbol).
+    - Ensure **no symbol** reaches `match_count` occurrences.
+  - The final `revealMap` must:
+    - Have length `rows * cols`.
+    - Be a flat 1D array indexed row‑major (0 = top‑left, last = bottom‑right).
+    - Contain only configured symbol IDs (no ad‑hoc strings).
+
+- **Symbol Hunt / Pick One**
+  - On a **win**:
+    - Place the required number of special symbols so the total payout of those symbols equals the chosen tier’s payout.
+    - Fill all other cells with non‑winning filler symbols.
+    - The **top prize** symbol must never appear on losing tickets.
+  - On a **loss**:
+    - Fill the grid entirely with non‑winning filler symbols as defined in config.
+
+- **Endpoint contract**
+  - Use a single, generic endpoint (`POST /api/scratch/play`) that:
+    - Authenticates the session/token.
+    - Reads math + mechanic config for `gameId` from DB.
+    - Rolls RNG, generates `revealMap`, and computes `finalPrize`.
+    - Performs wallet debit + optional credit in one transactional flow.
+    - Returns a GameCrafter‑compatible payload:
+      - `roundId`, `isWin`, `tierId`, `finalPrize`, `presentationSeed`, and `revealMap`.
+
+- **Testing & safety**
+  - Add unit tests per mechanic that:
+    - Validate grid length and symbol IDs.
+    - Prove that losing tickets never accidentally satisfy a win condition (e.g. no 3‑of‑a‑kind for paying symbols).
+    - Run Monte‑Carlo simulations (high number of rounds) to check empirical RTP is close to target.
+

@@ -1,0 +1,65 @@
+{
+  "category": "MATCH",
+  "rtp": 0.96,
+  "volatility": "medium",
+  "mathMode": "UNLIMITED",
+  "totalTickets": 1000000,
+  "winLogic": "SINGLE_WIN",
+  "layout": {
+    "rows": 4,
+    "columns": 4
+  },
+  "prizeTable": [
+    {
+      "id": "prize_1773222823447_o520iudeo",
+      "value": 50000,
+      "probability": 0.000004502456089796984,
+      "weight": 1,
+      "isWin": true
+    },
+    {
+      "id": "prize_1773222823447_xmub4veny",
+      "value": 1000,
+      "probability": 0.0004502456089796984,
+      "weight": 100,
+      "isWin": true
+    },
+    {
+      "id": "prize_1773222823447_d5z0dgg1e",
+      "value": 200,
+      "probability": 0.009004912179593969,
+      "weight": 2000,
+      "isWin": true
+    },
+    {
+      "id": "prize_1773222823447_9ta7vhuzx",
+      "value": 20,
+      "probability": 0.04502456089796984,
+      "weight": 10000,
+      "isWin": true
+    },
+    {
+      "id": "prize_1773222823447_0secspofh",
+      "value": 1,
+      "probability": 0.9455157788573667,
+      "weight": 210000,
+      "isWin": true
+    }
+  ],
+  "symbols": {
+    "win": [],
+    "lose": [
+      "/assets/symbols/star_stone_fixed.png",
+      "/assets/symbols/star_stone_fixed.png",
+      "/assets/symbols/star_stone_fixed.png"
+    ]
+  },
+  "match": {
+    "matchCount": 2,
+    "allowWildcards": false
+  },
+  "mechanic": {
+    "type": "match_4",
+    "matchCount": 4
+  }
+}
