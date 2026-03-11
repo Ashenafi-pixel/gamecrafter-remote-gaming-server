@@ -1,0 +1,147 @@
+{
+  "scratch": {
+    "layout": {
+      "rows": 4,
+      "columns": 4,
+      "shape": "square"
+    },
+    "mechanic": {
+      "type": "match_4",
+      "matchCount": 4
+    },
+    "brush": {
+      "size": 15
+    },
+    "symbols": {
+      "style": "gems",
+      "numberStyle": "gold",
+      "customAssets": []
+    },
+    "logo": {
+      "type": "none",
+      "scale": 1,
+      "position": "top",
+      "layout": "docked-header"
+    },
+    "background": {
+      "type": "color",
+      "value": "#1a1a1a"
+    },
+    "overlay": {
+      "image": "",
+      "color": "#ffffff",
+      "opacity": 0
+    },
+    "effects": {
+      "particles": true,
+      "confetti": true,
+      "parallax": true
+    },
+    "audio": {
+      "isGenerating": false
+    },
+    "mascot": {
+      "enabled": false,
+      "source": "none",
+      "position": "bottom-right",
+      "scale": 1
+    },
+    "prizes": [
+      {
+        "id": "prize_1773222823447_o520iudeo",
+        "name": "MEGA JACKPOT",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_crown"
+        },
+        "payout": 50000,
+        "weight": 1,
+        "probability": 0.0001
+      },
+      {
+        "id": "prize_1773222823447_xmub4veny",
+        "name": "Super Win",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_bar_gold"
+        },
+        "payout": 1000,
+        "weight": 100,
+        "probability": 0.01
+      },
+      {
+        "id": "prize_1773222823447_d5z0dgg1e",
+        "name": "Big Win",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_seven"
+        },
+        "payout": 200,
+        "weight": 2000,
+        "probability": 0.2
+      },
+      {
+        "id": "prize_1773222823447_9ta7vhuzx",
+        "name": "Nice Win",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_bell"
+        },
+        "payout": 20,
+        "weight": 10000,
+        "probability": 1
+      },
+      {
+        "id": "prize_1773222823447_0secspofh",
+        "name": "Console",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_plum"
+        },
+        "payout": 1,
+        "weight": 210000,
+        "probability": 21
+      }
+    ],
+    "math": {
+      "mathMode": "UNLIMITED"
+    }
+  },
+  "theme": {
+    "mainTheme": "Fantasy Kingdom",
+    "artStyle": "cartoon",
+    "colorScheme": "warm-vibrant",
+    "mood": "exciting",
+    "description": "Medieval fantasy realm with knights and dragons",
+    "references": [
+      "dragons",
+      "castle",
+      "kingdom",
+      "knight",
+      "princess",
+      "magic sword"
+    ],
+    "includeCardSymbols": true,
+    "includeWild": true,
+    "includeScatter": true,
+    "generated": {
+      "background": null,
+      "symbols": [],
+      "frame": null
+    },
+    "presetSymbol": {},
+    "selectedThemeId": "fantasy-kingdom",
+    "colors": {
+      "primary": "#4B0082",
+      "secondary": "#FFD700",
+      "accent": "#B22222",
+      "background": "#483D8B"
+    },
+    "name": "Fantasy Kingdom"
+  }
+}

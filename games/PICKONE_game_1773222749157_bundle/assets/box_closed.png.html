@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="module">import { injectIntoGlobalHook } from "/@react-refresh";
+injectIntoGlobalHook(window);
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;</script>
+
+  <script type="module" src="/@vite/client"></script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>SlotAI</title>
+<script>window.BUILD_TIMESTAMP = 1773220988190;</script></head>
+<body>
+  <script>
+    // Clear browser cache on page load
+    if (window.localStorage) {
+      const timestamp = new Date().getTime();
+      const cacheBustParam = `_=${timestamp}`;
+      
+      // Add cache busting parameter to all future fetch requests
+      const originalFetch = window.fetch;
+      window.fetch = function() {
+        let [resource, options] = arguments;
+        
+        // Add cache busting only for local resources
+        if (typeof resource === 'string' && !resource.includes('http')) {
+          const separator = resource.includes('?') ? '&' : '?';
+          resource = `${resource}${separator}${cacheBustParam}`;
+        }
+        
+        return originalFetch.apply(this, [resource, options]);
+      };
+      
+      // Attempt to clear any cached application data
+      try {
+        if (window.caches) {
+          caches.keys().then(names => {
+            names.forEach(name => {
+              caches.delete(name);
+            });
+          });
+        }
+      } catch (e) {
+        console.error('Failed to clear caches:', e);
+      }
+    }
+  </script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

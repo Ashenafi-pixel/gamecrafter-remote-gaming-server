@@ -12,7 +12,7 @@ services:
     # Set in Render Dashboard → Environment (sync: false = you provide values)
     envVars:
       - key: DATABASE_URL
-        sync: false
+        value: postgresql://postgres.yrjnvplaicudrbdogjpz:5kj0YmV5FKKpU9D50B7yH5A@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require
       - key: OPERATOR_SECRET
         sync: false
       - key: RGS_BASE_URL

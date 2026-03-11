@@ -1,0 +1,147 @@
+{
+  "scratch": {
+    "layout": {
+      "rows": 3,
+      "columns": 3,
+      "shape": "square"
+    },
+    "mechanic": {
+      "type": "match_2",
+      "matchCount": 2
+    },
+    "brush": {
+      "size": 30
+    },
+    "symbols": {
+      "style": "gems",
+      "numberStyle": "gold",
+      "customAssets": []
+    },
+    "logo": {
+      "type": "none",
+      "scale": 1,
+      "position": "top",
+      "layout": "docked-header"
+    },
+    "background": {
+      "type": "color",
+      "value": "#1a1a1a"
+    },
+    "overlay": {
+      "image": "",
+      "color": "#ffffff",
+      "opacity": 0
+    },
+    "effects": {
+      "particles": true,
+      "confetti": true,
+      "parallax": true
+    },
+    "audio": {
+      "isGenerating": false
+    },
+    "mascot": {
+      "enabled": false,
+      "source": "none",
+      "position": "bottom-right",
+      "scale": 1
+    },
+    "prizes": [
+      {
+        "id": "prize_1773222798030_uwd4qklv1",
+        "name": "Grand Prize",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_diamond"
+        },
+        "payout": 2500,
+        "weight": 5,
+        "probability": 0.0005
+      },
+      {
+        "id": "prize_1773222798030_yevirrjsj",
+        "name": "Major",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_ruby"
+        },
+        "payout": 500,
+        "weight": 50,
+        "probability": 0.005
+      },
+      {
+        "id": "prize_1773222798030_w90l1t4dn",
+        "name": "Minor",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_coin"
+        },
+        "payout": 100,
+        "weight": 1000,
+        "probability": 0.1
+      },
+      {
+        "id": "prize_1773222798030_newxf7wxb",
+        "name": "Mini",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_bill"
+        },
+        "payout": 10,
+        "weight": 53000,
+        "probability": 5.3
+      },
+      {
+        "id": "prize_1773222798030_8f97fwkbe",
+        "name": "Free Play",
+        "condition": {
+          "type": "match_n",
+          "count": 3,
+          "symbolId": "sym_cherries"
+        },
+        "payout": 1,
+        "weight": 290000,
+        "probability": 29
+      }
+    ],
+    "math": {
+      "mathMode": "UNLIMITED"
+    }
+  },
+  "theme": {
+    "mainTheme": "Fantasy Kingdom",
+    "artStyle": "cartoon",
+    "colorScheme": "warm-vibrant",
+    "mood": "exciting",
+    "description": "Medieval fantasy realm with knights and dragons",
+    "references": [
+      "dragons",
+      "castle",
+      "kingdom",
+      "knight",
+      "princess",
+      "magic sword"
+    ],
+    "includeCardSymbols": true,
+    "includeWild": true,
+    "includeScatter": true,
+    "generated": {
+      "background": null,
+      "symbols": [],
+      "frame": null
+    },
+    "presetSymbol": {},
+    "selectedThemeId": "fantasy-kingdom",
+    "colors": {
+      "primary": "#4B0082",
+      "secondary": "#FFD700",
+      "accent": "#B22222",
+      "background": "#483D8B"
+    },
+    "name": "Fantasy Kingdom"
+  }
+}

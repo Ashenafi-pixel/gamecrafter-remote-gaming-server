@@ -1,0 +1,127 @@
+{
+  "scratch": {
+    "layout": {
+      "rows": 1,
+      "columns": 3,
+      "shape": "rectangle"
+    },
+    "mechanic": {
+      "type": "pick_one",
+      "winningSymbol": "box_open"
+    },
+    "brush": {
+      "size": 40
+    },
+    "symbols": {
+      "style": "gems",
+      "numberStyle": "gold",
+      "customAssets": []
+    },
+    "logo": {
+      "type": "none",
+      "scale": 1,
+      "position": "top",
+      "layout": "docked-header"
+    },
+    "background": {
+      "type": "color",
+      "value": "#1a1a1a"
+    },
+    "overlay": {
+      "image": "",
+      "color": "#ffffff",
+      "opacity": 0
+    },
+    "effects": {
+      "particles": true,
+      "confetti": true,
+      "parallax": true
+    },
+    "audio": {
+      "isGenerating": false
+    },
+    "mascot": {
+      "enabled": false,
+      "source": "none",
+      "position": "bottom-right",
+      "scale": 1
+    },
+    "prizes": [
+      {
+        "id": "po_1",
+        "name": "Grand Prize",
+        "image": "assets/box_closed.png.html",
+        "condition": {
+          "type": "match_n",
+          "count": 1,
+          "symbolId": "prize_1"
+        },
+        "payout": 10,
+        "weight": 33,
+        "probability": 3.3
+      },
+      {
+        "id": "po_2",
+        "name": "Consolation",
+        "image": "assets/box_open.png.html",
+        "condition": {
+          "type": "match_n",
+          "count": 1,
+          "symbolId": "prize_2"
+        },
+        "payout": 1,
+        "weight": 33,
+        "probability": 3.3
+      }
+    ],
+    "math": {
+      "mathMode": "UNLIMITED"
+    },
+    "presentation": {
+      "style": "PICK_A_BOX",
+      "zones": 3
+    },
+    "rulesGrid": {
+      "ruleMode": "COLLECT_X",
+      "targetSymbolId": "assets/defstar.webp",
+      "requiredHits": 3,
+      "revealStyle": "MANUAL",
+      "grid": {
+        "rows": 4,
+        "cols": 4
+      }
+    }
+  },
+  "theme": {
+    "mainTheme": "Fantasy Kingdom",
+    "artStyle": "cartoon",
+    "colorScheme": "warm-vibrant",
+    "mood": "exciting",
+    "description": "Medieval fantasy realm with knights and dragons",
+    "references": [
+      "dragons",
+      "castle",
+      "kingdom",
+      "knight",
+      "princess",
+      "magic sword"
+    ],
+    "includeCardSymbols": true,
+    "includeWild": true,
+    "includeScatter": true,
+    "generated": {
+      "background": null,
+      "symbols": [],
+      "frame": null
+    },
+    "presetSymbol": {},
+    "selectedThemeId": "fantasy-kingdom",
+    "colors": {
+      "primary": "#4B0082",
+      "secondary": "#FFD700",
+      "accent": "#B22222",
+      "background": "#483D8B"
+    },
+    "name": "Fantasy Kingdom"
+  }
+}
