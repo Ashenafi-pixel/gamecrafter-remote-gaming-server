@@ -35,6 +35,11 @@ type ScratchResolvedOutcome struct {
 	RevealMap        []string `json:"revealMap"`
 }
 
+type ScratchSymbolsResponse struct {
+	GameID  string          `json:"gameId"`
+	Symbols []ScratchSymbol `json:"symbols"`
+}
+
 func (s *Server) getScratchConfig(gameID string) *ScratchConfig {
 	if s.scratchConfigs == nil {
 		return nil
@@ -43,6 +48,31 @@ func (s *Server) getScratchConfig(gameID string) *ScratchConfig {
 		return c
 	}
 	return nil
+}
+
+// handleScratchSymbols returns symbol configuration (IDs + images) for a scratch game.
+// GET /api/scratch/symbols?gameId=<GAME_ID>
+func (s *Server) handleScratchSymbols(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	gameID := strings.TrimSpace(r.URL.Query().Get("gameId"))
+	if gameID == "" {
+		http.Error(w, "gameId is required", http.StatusBadRequest)
+		return
+	}
+	cfg := s.getScratchConfig(gameID)
+	if cfg == nil {
+		http.Error(w, "unknown gameId", http.StatusNotFound)
+		return
+	}
+	resp := ScratchSymbolsResponse{
+		GameID:  cfg.GameID,
+		Symbols: cfg.Symbols,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 // handleScratchPlay implements POST /api/scratch/play.

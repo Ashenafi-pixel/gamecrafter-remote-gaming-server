@@ -146,6 +146,7 @@ func (s *Server) Run() error {
 	mux.HandleFunc("GET /health", s.health)
 	mux.HandleFunc("POST /api/openai/images", s.handleOpenAIImages)
 	mux.HandleFunc("POST /api/scratch/play", s.handleScratchPlay)
+	mux.HandleFunc("GET /api/scratch/symbols", s.handleScratchSymbols)
 	mux.HandleFunc("GET /rgs/balance", s.getBalance)
 	mux.HandleFunc("POST /rgs/round/start", s.roundStart)
 	mux.HandleFunc("POST /rgs/round/end", s.roundEnd)
