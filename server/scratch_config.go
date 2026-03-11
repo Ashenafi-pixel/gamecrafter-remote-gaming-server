@@ -20,6 +20,7 @@ type ScratchMechanic struct {
 type ScratchSymbol struct {
 	ID       string `json:"id"`
 	Category string `json:"category"` // "win", "dud", "top", etc.
+	Image    string `json:"image"`    // image path or URL (for symbol API / frontend)
 }
 
 // ScratchConfig is the full per-game config loaded from the DB.
