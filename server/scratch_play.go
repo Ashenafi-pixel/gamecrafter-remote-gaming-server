@@ -16,8 +16,7 @@ import (
 
 // ScratchPlayRequest is the request body for POST /api/scratch/play.
 type ScratchPlayRequest struct {
-	Token      string  `json:"token"`
-	SessionID  string  `json:"session_id,omitempty"` // optional; fallback to token if empty
+	SessionID  string  `json:"session_id"` // required
 	GameID     string  `json:"gameId"`
 	BetAmount  float64 `json:"betAmount"`
 	Currency   string  `json:"currency"`
@@ -89,13 +88,9 @@ func (s *Server) handleScratchPlay(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid JSON body", http.StatusBadRequest)
 		return
 	}
-	req.Token = strings.TrimSpace(req.Token)
 	req.SessionID = strings.TrimSpace(req.SessionID)
 	if req.SessionID == "" {
-		req.SessionID = req.Token
-	}
-	if req.SessionID == "" {
-		http.Error(w, "token or session_id is required", http.StatusUnauthorized)
+		http.Error(w, "session_id is required", http.StatusUnauthorized)
 		return
 	}
 	req.GameID = strings.TrimSpace(req.GameID)
