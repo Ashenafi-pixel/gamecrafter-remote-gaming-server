@@ -103,6 +103,14 @@ func (s *Server) handleImportZip(w http.ResponseWriter, r *http.Request) {
 		log.Printf("import: game_id=%s upsert games table: %v", gameID, err)
 	}
 
+	bundleRoot := filepath.Join(s.cfg.GamesDir, gameID)
+	if err := s.upsertScratchConfigFromBundle(r.Context(), gameID, bundleRoot); err != nil {
+		log.Printf("import: game_id=%s upsert scratch_games: %v", gameID, err)
+	}
+	if err := s.upsertGameMathFromBundle(r.Context(), gameID, bundleRoot); err != nil {
+		log.Printf("import: game_id=%s upsert game_math: %v", gameID, err)
+	}
+
 	for _, providerID := range s.registry.ListProviders() {
 		games, _ := s.registry.ListGames(providerID)
 		found := false
@@ -232,6 +240,101 @@ func (s *Server) extractGameBundleZip(gameID string, zipBytes []byte) error {
 		log.Printf("import: game_id=%s register math: %v (bundle still imported)", gameID, err)
 	}
 	return nil
+}
+
+func (s *Server) upsertScratchConfigFromBundle(ctx context.Context, gameID, bundleRoot string) error {
+	db, err := rgsdb.GetDB()
+	if err != nil || db == nil {
+		return fmt.Errorf("no db: %w", err)
+	}
+
+	// Default mechanic: 3x3 Match-3
+	mech := map[string]any{
+		"type":        "match_n",
+		"match_count": 3,
+		"rows":        3,
+		"cols":        3,
+	}
+	mechJSON, err := json.Marshal(mech)
+	if err != nil {
+		return err
+	}
+
+	symbolConfig := map[string]any{
+		"symbols": []map[string]any{},
+	}
+	symJSON, err := json.Marshal(symbolConfig)
+	if err != nil {
+		return err
+	}
+
+	var existingID string
+	err = db.QueryRowContext(ctx, "SELECT game_id FROM scratch_games WHERE game_id = $1", gameID).Scan(&existingID)
+	switch {
+	case err == sql.ErrNoRows:
+		_, err = db.ExecContext(ctx, `
+      INSERT INTO scratch_games (game_id, mechanic, symbol_config)
+      VALUES ($1, $2::jsonb, $3::jsonb)
+    `, gameID, string(mechJSON), string(symJSON))
+		return err
+	case err != nil:
+		return err
+	default:
+		_, err = db.ExecContext(ctx, `
+      UPDATE scratch_games
+      SET mechanic = $2::jsonb,
+          symbol_config = $3::jsonb,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE game_id = $1
+    `, gameID, string(mechJSON), string(symJSON))
+		return err
+	}
+}
+
+func (s *Server) upsertGameMathFromBundle(ctx context.Context, gameID, bundleRoot string) error {
+	db, err := rgsdb.GetDB()
+	if err != nil || db == nil {
+		return fmt.Errorf("no db: %w", err)
+	}
+	path := filepath.Join(bundleRoot, "math.json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+
+	// Validate that it at least parses as gamemath.GameMath, then store raw JSON.
+	var gm gamemath.GameMath
+	if err := json.Unmarshal(data, &gm); err != nil {
+		return fmt.Errorf("invalid math.json: %w", err)
+	}
+	modelID := gm.ModelID
+	if modelID == "" {
+		modelID = gameID + "_default"
+	}
+
+	var existingID int64
+	err = db.QueryRowContext(ctx, `
+    SELECT id FROM game_math WHERE game_id = $1 AND model_id = $2
+  `, gameID, modelID).Scan(&existingID)
+	switch {
+	case err == sql.ErrNoRows:
+		_, err = db.ExecContext(ctx, `
+      INSERT INTO game_math (game_id, model_id, status, math)
+      VALUES ($1, $2, 'ACTIVE', $3::jsonb)
+    `, gameID, modelID, string(data))
+		return err
+	case err != nil:
+		return err
+	default:
+		_, err = db.ExecContext(ctx, `
+      UPDATE game_math
+      SET math = $3::jsonb,
+          status = 'ACTIVE',
+          updated_at = CURRENT_TIMESTAMP
+      WHERE game_id = $1 AND model_id = $2
+    `, gameID, modelID, string(data))
+		return err
+	}
 }
 
 // upsertGameInDB inserts or updates the game in the game_crafter games table (container DB).
