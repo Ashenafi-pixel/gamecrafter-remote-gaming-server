@@ -16,7 +16,7 @@ import (
 
 // ScratchPlayRequest is the request body for POST /api/scratch/play.
 type ScratchPlayRequest struct {
-	SessionID  string  `json:"session_id"` // required
+git 	SessionID  string  `json:"session_id"` // required
 	GameID     string  `json:"gameId"`
 	BetAmount  float64 `json:"betAmount"`
 	Currency   string  `json:"currency"`
