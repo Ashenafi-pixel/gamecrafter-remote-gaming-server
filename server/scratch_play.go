@@ -16,7 +16,7 @@ import (
 
 // ScratchPlayRequest is the request body for POST /api/scratch/play.
 type ScratchPlayRequest struct {
-    SessionID  string  `json:"session_id"` // required
+	SessionID  string  `json:"session_id"` // required
 	GameID     string  `json:"gameId"`
 	BetAmount  float64 `json:"betAmount"`
 	Currency   string  `json:"currency"`
@@ -39,16 +39,6 @@ type ScratchSymbolsResponse struct {
 	Symbols []ScratchSymbol `json:"symbols"`
 }
 
-func (s *Server) getScratchConfig(gameID string) *ScratchConfig {
-	if s.scratchConfigs == nil {
-		return nil
-	}
-	if c, ok := s.scratchConfigs[gameID]; ok {
-		return c
-	}
-	return nil
-}
-
 // handleScratchSymbols returns symbol configuration (IDs + images) for a scratch game.
 // GET /api/scratch/symbols?gameId=<GAME_ID>
 func (s *Server) handleScratchSymbols(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +51,11 @@ func (s *Server) handleScratchSymbols(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "gameId is required", http.StatusBadRequest)
 		return
 	}
-	cfg := s.getScratchConfig(gameID)
+	cfg, err := loadScratchConfigFromDB(gameID)
+	if err != nil {
+		http.Error(w, "database error", http.StatusBadGateway)
+		return
+	}
 	if cfg == nil {
 		http.Error(w, "unknown gameId", http.StatusNotFound)
 		return
@@ -235,7 +229,11 @@ func (s *Server) handleScratchPlay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build revealMap according to mechanic config (Variant A/B/C). Fallback to 1x3 if no config.
-	cfg := s.getScratchConfig(req.GameID)
+	cfg, err := loadScratchConfigFromDB(req.GameID)
+	if err != nil {
+		http.Error(w, "database error", http.StatusBadGateway)
+		return
+	}
 	revealMap := buildRevealMapFromOutcome(cfg, &outcome)
 
 	resp := ScratchResolvedOutcome{
