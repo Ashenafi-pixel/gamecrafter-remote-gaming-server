@@ -2,8 +2,9 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
-	"log"
+	"fmt"
 
 	rgsdb "github.com/Ashenafi-pixel/gamecrafter-remote-gaming-server"
 )
@@ -30,49 +31,37 @@ type ScratchConfig struct {
 	Symbols  []ScratchSymbol `json:"symbols"`
 }
 
-// loadScratchConfigs loads scratch game configs from scratch_games into memory.
-func (s *Server) loadScratchConfigs() {
+// loadScratchConfigFromDB loads scratch config for a single game_id from scratch_games.
+func loadScratchConfigFromDB(gameID string) (*ScratchConfig, error) {
 	db, err := rgsdb.GetDB()
 	if err != nil || db == nil {
-		return
+		return nil, fmt.Errorf("no db: %w", err)
 	}
-	rows, err := db.QueryContext(context.Background(), `
-		SELECT game_id, mechanic, symbol_config
+	var mechJSON, symJSON []byte
+	err = db.QueryRowContext(context.Background(), `
+		SELECT mechanic, symbol_config
 		FROM scratch_games
-	`)
+		WHERE game_id = $1
+	`, gameID).Scan(&mechJSON, &symJSON)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
 	if err != nil {
-		log.Printf("scratch config: query failed: %v", err)
-		return
+		return nil, err
 	}
-	defer rows.Close()
-
-	if s.scratchConfigs == nil {
-		s.scratchConfigs = make(map[string]*ScratchConfig)
+	var mech ScratchMechanic
+	if err := json.Unmarshal(mechJSON, &mech); err != nil {
+		return nil, err
 	}
-
-	for rows.Next() {
-		var gameID string
-		var mechJSON, symJSON []byte
-		if err := rows.Scan(&gameID, &mechJSON, &symJSON); err != nil {
-			log.Printf("scratch config: scan: %v", err)
-			continue
-		}
-		var mech ScratchMechanic
-		if err := json.Unmarshal(mechJSON, &mech); err != nil {
-			log.Printf("scratch config: bad mechanic for %s: %v", gameID, err)
-			continue
-		}
-		var wrapper struct {
-			Symbols []ScratchSymbol `json:"symbols"`
-		}
-		if err := json.Unmarshal(symJSON, &wrapper); err != nil {
-			log.Printf("scratch config: bad symbols for %s: %v", gameID, err)
-			continue
-		}
-		s.scratchConfigs[gameID] = &ScratchConfig{
-			GameID:   gameID,
-			Mechanic: mech,
-			Symbols:  wrapper.Symbols,
-		}
+	var wrapper struct {
+		Symbols []ScratchSymbol `json:"symbols"`
 	}
+	if err := json.Unmarshal(symJSON, &wrapper); err != nil {
+		return nil, err
+	}
+	return &ScratchConfig{
+		GameID:   gameID,
+		Mechanic: mech,
+		Symbols:  wrapper.Symbols,
+	}, nil
 }
