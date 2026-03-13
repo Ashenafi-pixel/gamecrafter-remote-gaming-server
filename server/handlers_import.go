@@ -248,24 +248,65 @@ func (s *Server) upsertScratchConfigFromBundle(ctx context.Context, gameID, bund
 		return fmt.Errorf("no db: %w", err)
 	}
 
-	// Default mechanic: 3x3 Match-3
-	mech := map[string]any{
-		"type":        "match_n",
-		"match_count": 3,
-		"rows":        3,
-		"cols":        3,
-	}
-	mechJSON, err := json.Marshal(mech)
-	if err != nil {
-		return err
+	// Prefer explicit RGS scratch config from rgs_config.json if present.
+	type rgsConfigFile struct {
+		GameID   string          `json:"gameId"`
+		Mechanic ScratchMechanic `json:"mechanic"`
+		Symbols  []ScratchSymbol `json:"symbols"`
 	}
 
-	symbolConfig := map[string]any{
-		"symbols": []map[string]any{},
+	var mechJSON, symJSON []byte
+	configPath := filepath.Join(bundleRoot, "rgs_config.json")
+	if data, err := os.ReadFile(configPath); err == nil {
+		var cfg rgsConfigFile
+		if err := json.Unmarshal(data, &cfg); err != nil {
+			log.Printf("import: game_id=%s rgs_config.json invalid: %v (falling back to default scratch config)", gameID, err)
+		} else {
+			// Optional sanity check: log if bundle gameId doesn't match DB gameID, but always trust DB gameID.
+			if cfg.GameID != "" && cfg.GameID != gameID {
+				log.Printf("import: bundle rgs_config.json gameId=%s does not match assigned game_id=%s (using DB game_id)", cfg.GameID, gameID)
+			}
+			if b, err := json.Marshal(cfg.Mechanic); err == nil {
+				mechJSON = b
+			} else {
+				log.Printf("import: game_id=%s marshal mechanic from rgs_config.json failed: %v", gameID, err)
+			}
+			wrapper := struct {
+				Symbols []ScratchSymbol `json:"symbols"`
+			}{
+				Symbols: cfg.Symbols,
+			}
+			if b, err := json.Marshal(wrapper); err == nil {
+				symJSON = b
+			} else {
+				log.Printf("import: game_id=%s marshal symbols from rgs_config.json failed: %v", gameID, err)
+			}
+		}
 	}
-	symJSON, err := json.Marshal(symbolConfig)
-	if err != nil {
-		return err
+
+	// Fallback: if no rgs_config.json or it failed to parse, use a safe default 3x3 Match-3 with no symbols.
+	if mechJSON == nil || symJSON == nil {
+		log.Printf("import: game_id=%s using default scratch config (no valid rgs_config.json found)", gameID)
+		mech := map[string]any{
+			"type":        "match_n",
+			"match_count": 3,
+			"rows":        3,
+			"cols":        3,
+		}
+		b, err := json.Marshal(mech)
+		if err != nil {
+			return err
+		}
+		mechJSON = b
+
+		symbolConfig := map[string]any{
+			"symbols": []map[string]any{},
+		}
+		b, err = json.Marshal(symbolConfig)
+		if err != nil {
+			return err
+		}
+		symJSON = b
 	}
 
 	var existingID string
